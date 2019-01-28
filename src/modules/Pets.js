@@ -30,7 +30,14 @@ class Pets extends Component {
     let time = new Date().getTime();
     let timeDiff = time - this.state.lastUpdate;
     console.log(timeDiff);
-    this.setState({lastUpdate: time});
+    let minutesPast = Math.floor(timeDiff / 60000);
+    console.log(minutesPast);
+    if(minutesPast > 4) {
+      let hungerPoints = Math.floor(minutesPast / 5);
+      let hunger = this.state.hunger - hungerPoints;
+      if(hunger < 0) hunger = 0;
+      this.setState({hunger: hunger, lastUpdate: time});
+    }
   }
 
   savePet() {
@@ -38,21 +45,25 @@ class Pets extends Component {
   }
 
   birthPet() {
-    this.setState({birthTime: 0,hunger: 0, lastUpdate: new Date().getTime()}, () => {
+    let time = new Date().getTime();
+    this.setState({birthTime: time,hunger: 0, lastUpdate: time}, () => {
       this.savePet();
     });
   }
 
   feedPet() {
-    this.setState({hunger: this.state.hunger+1}, () => {
+    let hunger = this.state.hunger+1;
+    if(hunger > 100) hunger = 100;
+    this.setState({hunger: hunger}, () => {
       this.savePet();
     });
+    this.updatePet();
   }
 
   render() {
     return (
       <div>
-        <p>hi {this.state.hunger}</p>
+        <p>hunger: {this.state.hunger}</p>
         <button onClick={this.feedPet}>feed</button>
       </div>
     )
